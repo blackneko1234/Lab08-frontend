@@ -44,6 +44,7 @@
 <script>
 import EventService from '@/services/EventService.js'
 export default {
+  inject: ['GStore'],
   data() {
     return {
       event: {
@@ -57,16 +58,22 @@ export default {
   methods: {
     saveEvent() {
       EventService.saveEvent(this.event)
-      .then((response) => {
-        console.log(response)
-        this.$router.push({
-          name: 'EventLayout',
-          params: { id: response.data.id }
+        .then((response) => {
+          console.log(response)
+          this.$router.push({
+            name: 'EventLayout',
+            params: { id: response.data.id }
+          })
+          this.GStore.flashMessage =
+            'You are successfully add a new event for ' + response.data.title
+          setTimeout(() => {
+            // After 3 seconds remove it
+            this.GStore.flashMessage = ''
+          }, 3000)
         })
-      })
-      .catch(()=>{
-        this.$router.push('NetworkError')
-      })
+        .catch(() => {
+          this.$router.push('NetworkError')
+        })
     }
   }
 }
